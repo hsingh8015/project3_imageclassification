@@ -4,7 +4,34 @@ from tensorflow.keras.models import load_model
 from PIL import Image
 import tensorflow as tf
 import json
-# from warbler_data import warbler_facts  # Update to the correct facts file name
+import pandas as pd
+
+# Load the warbler facts DataFrame
+warbler_facts_df = pd.read_csv('Fun Facts about Warblers.csv')
+
+# Define the introductory text to identify and any unwanted placeholder text
+intro_prefix = "Here are five unique, fun, and interesting facts about"
+placeholder_text = "No fact available for this fun fact slot."
+
+# Function to clean up the introductory text and placeholder text in the DataFrame
+def clean_facts(df):
+    for col in [f'Fun Fact {i}' for i in range(1, 6)]:
+        # Replace introductory text and placeholder with "No fact available"
+        df[col] = df[col].apply(lambda x: "No fact available" if pd.isna(x) or
+                                 (isinstance(x, str) and (x.startswith(intro_prefix) or placeholder_text in x)) else x)
+    return df
+
+# Apply the cleaning function to the DataFrame
+warbler_facts_df = clean_facts(warbler_facts_df)
+
+# Function to get all fun facts for a species from the DataFrame
+def get_fun_facts(species_name):
+    fact_row = warbler_facts_df[warbler_facts_df['Species Name'] == species_name]
+    if not fact_row.empty:
+        facts = [fact_row[f'Fun Fact {i}'].values[0] for i in range(1, 6)]  # Get facts from columns Fun Fact 1 to Fun Fact 5
+        return facts
+    else:
+        return ["No facts available for this warbler."]
 
 # Page configuration
 st.set_page_config(page_title="Warbler Classifier", page_icon="🐦", layout="centered")
@@ -16,9 +43,9 @@ st.divider()
 
 # Sidebar with information
 st.sidebar.title("About This App")
-st.sidebar.write("This app classifies warbler images with ?% accuracy and provides interesting facts about them.")
+st.sidebar.write("This app classifies warbler images and provides interesting facts about them.")
 st.sidebar.markdown("### Instructions")
-st.sidebar.write("1. Upload an image of a warbler.\n2. View the predicted species and learn some fun fact!")
+st.sidebar.write("1. Upload an image of a warbler.\n2. View the predicted species and learn some fun facts!")
 
 # Load the model
 model = load_model('warbler_model.keras')
@@ -36,6 +63,12 @@ def preprocess_image(image):
     image = np.expand_dims(image, axis=0)  # Add batch dimension
     return image
 
+# Helper function to clean up the species name by removing numbers, periods, and extra whitespace
+def clean_species_name(species_name):
+    # Remove any leading numbers, periods, and whitespace
+    cleaned_name = ''.join([char for char in species_name if not char.isdigit()]).replace('.', '').strip()
+    return cleaned_name
+
 # File uploader
 uploaded_file = st.file_uploader("Choose a photo", type=["jpg", "jpeg", "png"])
 
@@ -49,16 +82,29 @@ if uploaded_file is not None:
 
     with st.spinner("Classifying..."):
         predictions = model.predict(processed_image)
-    st.success("Classification complete!")
+    predicted_class = np.argmax(predictions, axis=1)[0]
+    raw_species_name = class_names_ordered[predicted_class]
+    cleaned_species_name = clean_species_name(raw_species_name)
 
-    # Get predicted class and corresponding fact
-    predicted_class = np.argmax(predictions, axis=1)
-    warbler_name = class_names_ordered[predicted_class[0]]
-    # warbler_fact = warbler_facts.get(warbler_name, "No fact available for this warbler.")
+    st.success(f"Predicted warbler: **{cleaned_species_name}**")
 
-    # Display results in two columns
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(f"### Predicted warbler: **{warbler_name}**")
-    # with col2:
-    #     st.markdown(f"### 🌟 Fun Fact: {warbler_fact}")
+    # Display the fun facts
+    fun_facts = get_fun_facts(cleaned_species_name)
+
+    # Filter out invalid facts and handle NaNs
+    valid_facts = []
+    for fact in fun_facts:
+        if isinstance(fact, str):  # Ensure the fact is a string
+            if fact != "No fact available":  # Exclude placeholder text
+                cleaned_fact = fact.split('. ', 1)[1] if '. ' in fact else fact  # Clean the fact
+                valid_facts.append(cleaned_fact)
+        elif not pd.isna(fact):  # Handle non-string and NaN values
+            valid_facts.append("No fact available for this fun fact slot.")
+
+# Display the valid fun facts or a message if none are available
+    if valid_facts:
+        for i, fact in enumerate(valid_facts, start=1):
+            st.markdown(f"### 🌟 Fun Fact {i}: {fact}")
+    else:
+        st.markdown("### 🌟 No fun facts available for this warbler.")
+ 
