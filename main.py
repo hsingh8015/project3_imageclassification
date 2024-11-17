@@ -4,6 +4,7 @@ from tensorflow.keras.models import load_model
 from PIL import Image
 import tensorflow as tf
 import json
+from summary_pipeline import summarize_facts
 import pandas as pd
 
 # Load the warbler facts DataFrame
@@ -45,7 +46,7 @@ st.divider()
 st.sidebar.title("About This App")
 st.sidebar.write("This app classifies warbler images and provides interesting facts about them.")
 st.sidebar.markdown("### Instructions")
-st.sidebar.write("1. Upload an image of a warbler.\n2. View the predicted species and learn some fun facts!")
+st.sidebar.write("1. Upload an image of a warbler.\n2. View the predicted species and learn some information about them!")
 
 # Load the model
 model = load_model('warbler_model.keras')
@@ -92,19 +93,21 @@ if uploaded_file is not None:
     fun_facts = get_fun_facts(cleaned_species_name)
 
     # Filter out invalid facts and handle NaNs
-    valid_facts = []
-    for fact in fun_facts:
-        if isinstance(fact, str):  # Ensure the fact is a string
-            if fact != "No fact available":  # Exclude placeholder text
-                cleaned_fact = fact.split('. ', 1)[1] if '. ' in fact else fact  # Clean the fact
-                valid_facts.append(cleaned_fact)
-        elif not pd.isna(fact):  # Handle non-string and NaN values
-            valid_facts.append("No fact available for this fun fact slot.")
+    valid_facts = [
+        fact.split('. ', 1)[1] if isinstance(fact, str) and '. ' in fact else fact
+        for fact in fun_facts
+        if isinstance(fact, str) and fact != "No fact available"
+    ]
 
-# Display the valid fun facts or a message if none are available
+    # Display the valid fun facts or a message if none are available
     if valid_facts:
         for i, fact in enumerate(valid_facts, start=1):
             st.markdown(f"### 🌟 Fun Fact {i}: {fact}")
     else:
         st.markdown("### 🌟 No fun facts available for this warbler.")
- 
+
+    # Display the fun facts summary
+    with st.spinner("Summarizing fun facts..."):
+        summary = summarize_facts(cleaned_species_name, warbler_facts_df)
+    st.markdown(f"### 🌟 Summary of Fun Facts:")
+    st.write(summary)
