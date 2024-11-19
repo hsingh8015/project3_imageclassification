@@ -1,0 +1,11 @@
+tensorflow==2.18.0
+scikit-learn==1.4.2
+pillow==10.4.0
+pandas==2.2.3
+numpy==1.26.4
+matplotlib==3.8.4
+seaborn==0.12.2
+streamlit==1.39.0
+transformers==4.46.2
+requests==2.32.2
+
