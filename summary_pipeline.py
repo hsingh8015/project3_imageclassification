@@ -5,8 +5,8 @@ import pandas as pd
 # Load dataset
 warbler_facts_df = pd.read_csv('Fun Facts about Warblers.csv')
 
-# Pretrained summarization pipeline
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+# Use TensorFlow framework explicitly
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn", framework="tf")
 
 # Function to clean and prepare text for summarization
 def prepare_text_for_summary(species_name, warbler_facts_df):
