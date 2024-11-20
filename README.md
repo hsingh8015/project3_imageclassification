@@ -42,13 +42,13 @@ Use the following code to extract the data from their individual folders, so tha
 
 Import Libraries
 
-<img src="images_code\Data_Prep_libraries.jpg">
+![alt text](Images_code/Data_Prep_libraries.jpg)
 
 Define the Path
-<img src="Images_code\Data_Prep_Define_Path.jpg">
+![alt text](Images_code/Data_Prep_Define_Path.jpg)
 
 Copy Initialize Variables & Save the df into a csv file 
-<img src="Images_code/Data_Prep_Initialize_variables.jpg">
+![alt text](Images_code/Data_Prep_Initialize_variables.jpg)
 
 ### Creating the Model
 Follow the code below and in the `Model.ipynb` file 
