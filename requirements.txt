@@ -8,4 +8,5 @@ seaborn==0.12.2
 streamlit==1.39.0
 transformers==4.46.2
 requests==2.32.2
+tf-keras==2.18.0
 
