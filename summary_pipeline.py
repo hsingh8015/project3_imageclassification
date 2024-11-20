@@ -43,20 +43,29 @@ def refine_summary(summary, facts_df, species_name):
     # Retrieve key ecological and behavioral facts from the dataset
     fact_row = facts_df[facts_df['Species Name'] == species_name]
     if not fact_row.empty:
+        # Collect relevant facts based on keywords like "habitat"
         key_facts = [
             fact_row[f'Fun Fact {i}'].values[0]
             for i in range(1, 6)
-            if "habitat" in fact_row[f'Fun Fact {i}'].values[0].lower()
+            if pd.notna(fact_row[f'Fun Fact {i}'].values[0])
+            and "habitat" in fact_row[f'Fun Fact {i}'].values[0].lower()
         ]
     else:
         key_facts = []
     
     # If no ecological/behavioral facts are in the summary, append one
     if key_facts and not any("habitat" in summary.lower() for fact in key_facts):
-        summary += f" Additionally, {key_facts[0]}"  # Add the first relevant fact.
+        # Clean the additional fact by removing the numbering (e.g., "2. ")
+        additional_fact = key_facts[0]
+        
+        # Use regex to remove the leading numbering (e.g., "2. ")
+        import re
+        additional_fact = re.sub(r'^\d+\.\s*', '', additional_fact).strip()  # Removes "2. " or similar patterns
+        
+        # Append cleaned fact to the summary
+        summary += f" Additionally, {additional_fact}"
     
     return summary
-
 # Summarize fun facts for a given species
 def summarize_facts(species_name, warbler_facts_df):
     text = prepare_text_for_summary(species_name, warbler_facts_df)
