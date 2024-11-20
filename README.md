@@ -45,33 +45,42 @@ Import Libraries
 ![alt text](Images_code/Data_Prep_libraries.jpg)
 
 Define the Path
+
 ![alt text](Images_code/Data_Prep_Define_Path.jpg)
 
 Copy Initialize Variables & Save the df into a csv file 
+
 ![alt text](Images_code/Data_Prep_Initialize_variables.jpg)
 
 ### Creating the Model
 Follow the code below and in the `Model.ipynb` file 
 
 Import Libraries
+
 ![alt text](Images_code/Model_import_Libraries.jpg)
 
 Import Data Files 
+
 ![alt text](Images_code/Model_importing_data_files.jpg)
 
 Get sizes into list
+
 ![alt text](Images_code/Model_get_sizes_into_list.jpg)
 
 Float images
+
 ![alt text](Images_code/model_float_images.jpg)
 
 Data Normalization
+
 ![alt text](Images_code/Model_normalize_imagess.jpg)
 
 Augment Data set
+
 ![alt text](Images_code/Model_Augment_data_set.jpg)
 
 Plot Accuracy & Model Loss
+
 ![alt text](Images_code/Model_Accuracy&Model_Loss.jpg)
 
 ### Fun Facts
@@ -83,12 +92,15 @@ Import Libraries
 ![alt text](Images_code/Gradio_Import_Libraries.jpg)
 
 Load trained Keras Model
+
 ![alt text](Images_code/Gradio_load_trained_Keras_Model.jpg)
 
 Read in Fun Facts
+
 ![alt text](Images_code/Gradio_read_In_Fun_Facts.jpg)
 
 Create the Gradio Interface
+
 ![alt text](Images_code/Gradio_Create_Interface.jpg)
 
 Launch the app
@@ -96,6 +108,7 @@ Launch the app
 ![alt text](Images_code/Gradio_Launch_app.jpg)
 
 Image of app output 
+
 ![alt text](Images_code/Gradio_App_ScreenShot.png)
 
       
